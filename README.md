@@ -58,29 +58,3 @@ dnfseek
 
 MIT (or GPL, your choice)
 
-```
-
----
-
-## 📝 Reddit Post Draft
-
-**Title:**
-> I made a pacseek-like TUI package browser for Fedora (`dnfseek`)
-
-**Body:**
-```
-
-I’ve always loved how Arch Linux has [pacseek](https://github.com/moson-mo/pacseek) for a nice TUI package browser. Fedora doesn’t have anything similar, so I hacked together a Bash script with `fzf` and `dnf` that works almost the same way.
-
-Features:
-
-* 🔎 Search packages (all or just installed)
-* ✅ Installed packages highlighted in green with a checkmark
-* 📜 Preview panel shows `dnf info`
-* 📦 Context-aware actions (Install / Reinstall / Remove / Update)
-* ↩️ Cancel always brings you back to the menu instead of quitting
-
-Repo: [GitHub link here]
-
-It’s just a Bash script, but it feels like a complete little TUI program. Feedback welcome!
-
