@@ -52,7 +52,7 @@ dnfseek
 
 ## 📸 Screenshot
 
-*(add a terminal screenshot of it in action)*
+![Demo](demo.gif)
 
 ## 📜 License
 
