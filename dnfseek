@@ -1,0 +1,80 @@
+#!/bin/bash
+# dnf-fzf: pacseek-like package browser for Fedora
+
+while true; do
+  # ===== MAIN MENU =====
+  mode=$(printf "🔎 Search all packages\n📗 Show installed packages\n❌ Quit" | \
+    fzf --prompt="Main Menu: " \
+        --header=$'⬆⬇ Navigate | ⏎ Select | Ctrl-C Quit' \
+        --height=20% \
+        --reverse)
+
+  case "$mode" in
+    "❌ Quit" | "") exit 0 ;;
+    "📗 Show installed packages") show_installed_only=true ;;
+    "🔎 Search all packages") show_installed_only=false ;;
+  esac
+
+  # ===== PACKAGE LIST =====
+  installed=$(dnf list --installed 2>/dev/null | \
+    grep -vE '^(Installed|Available) Packages' | \
+    awk '{print $1}')
+
+  if [ "$show_installed_only" = true ]; then
+    package_list=$(
+      for p in $installed; do
+        echo -e "\e[32m$p ✅\e[0m"
+      done
+    )
+  else
+    available=$(dnf list --available 2>/dev/null | \
+      grep -vE '^(Installed|Available) Packages' | \
+      awk '{print $1}' | grep -vxFf <(echo "$installed"))
+    package_list=$(
+      {
+        for p in $installed; do
+          echo -e "\e[32m$p ✅\e[0m"
+        done
+        echo "$available"
+      } | sort -u
+    )
+  fi
+
+  pkg=$(echo "$package_list" | \
+    fzf --ansi \
+        --prompt="🔎 Search package: " \
+        --header=$'⬆⬇ Navigate | ⏎ Select | Ctrl-C Back\nGreen = Installed ✅ | White = Available' \
+        --height=40% \
+        --reverse \
+        --preview 'dnf info {1} 2>/dev/null' \
+        --preview-window=down:wrap:60%)
+
+  # If user canceled, return to main menu
+  [ -z "$pkg" ] && continue
+
+  # Clean package name
+  clean_pkg=$(echo "$pkg" | sed 's/ ✅//' | sed 's/\x1b\[[0-9;]*m//g')
+
+  # ===== ACTION MENU =====
+  if echo "$installed" | grep -qx "$clean_pkg"; then
+    action=$(printf "📦 Reinstall\n🗑️ Remove\n⬆️ Update\n↩️ Back" | \
+      fzf --prompt="Choose action: " \
+          --header="Selected (installed): $clean_pkg" \
+          --height=20% \
+          --reverse)
+  else
+    action=$(printf "📦 Install\n↩️ Back" | \
+      fzf --prompt="Choose action: " \
+          --header="Selected (available): $clean_pkg" \
+          --height=20% \
+          --reverse)
+  fi
+
+  case "$action" in
+    "📦 Install")   sudo dnf install -y "$clean_pkg" ;;
+    "📦 Reinstall") sudo dnf reinstall -y "$clean_pkg" ;;
+    "🗑️ Remove")    sudo dnf remove -y "$clean_pkg" ;;
+    "⬆️ Update")    sudo dnf upgrade -y "$clean_pkg" ;;
+    "↩️ Back" | "") continue ;;
+  esac
+done
