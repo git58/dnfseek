@@ -12,6 +12,11 @@ It uses [fzf](https://github.com/junegunn/fzf) to provide a searchable, interact
 - ↩️ Cancel always takes you back instead of exiting
 - Simple Bash script, no heavy dependencies
 
+## 📸 Screenshot
+
+![Demo](demo.gif)
+
+
 ## 🛠️ Requirements
 - Fedora (dnf5)
 - `fzf`
@@ -49,10 +54,6 @@ Then just run:
 ```bash
 dnfseek
 ```
-
-## 📸 Screenshot
-
-![Demo](demo.gif)
 
 ## 📜 License
 
