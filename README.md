@@ -55,7 +55,3 @@ Then just run:
 dnfseek
 ```
 
-## 📜 License
-
-MIT (or GPL, your choice)
-
